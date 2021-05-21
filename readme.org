@@ -1,0 +1,90 @@
+#+TITLE: Land of Lisp
+#+AUTHOR: Vlad Tutunea
+
+* Introduction
+Lisp is a very /expressive/ language.
+Once lisp is learned, one will =dream= in lisp :-)
+
+Simple mafs
+#+begin_src lisp
+(+ 3 (* 2 4))
+#+end_src
+
+One of =Lisp='s core characteristics is that writing a Lisp directly in Lisp is, itself, unbelievably simple. Lisp is both *feature-rich* and *tweakable*
+- ANSI Common Lisp
+- Scheme
+
+Up and coming Lisps
+- Arc
+- Clojure
+
+Lisp dialects usef for scripting
+- Emacs Lisp <3
+- Guile Scheme
+- Script-Fu
+
+* Chapter 2
+** Guess my number
+#+begin_src lisp
+;; Define global variables
+(defparameter *small* 1)
+(defparameter *big* 100)
+
+;; Define global functions
+(defun guess-my-number ()
+  (ash (+ *small* *big*) -1))
+
+(defun smaller ()
+  (setf *big* (1- (guess-my-number)))
+  (guess-my-number))
+
+(defun bigger ()
+  (setf *small* (1+ (guess-my-number)))
+  (guess-my-number))
+
+(defun start-over ()
+  (defparameter *small* 1)
+  (defparameter *big* 100)
+  (guess-my-number))
+
+#+end_src
+
+#+RESULTS:
+: 25
+
+Using =*= is a best practice to mark global variables.
+
+** Defining Local Variables
+#+begin_src lisp
+(let ((a 5)
+	  (b 6))
+  (+ a b))
+#+end_src
+
+** Defining Local Functions
+*** flet
+#+begin_src lisp
+(flet ((f (n)
+		 (+ n 10))
+	   (g (n)
+		 (- n 3)))
+  (g (f 5)))
+#+end_src
+
+*** labels - have access to previously defined local functions. Also recursion!!
+#+begin_src lisp
+(labels ((a (n)
+		   (+ n 5))
+		 (b (n)
+		   (+ (a n) 6)))
+  (b 10))
+#+end_src
+
+#+begin_src lisp
+(defun factorial (N)
+  (if (= N 1)
+	  1
+	  (* N (factorial (- N 1)))))
+
+(factorial 5)
+#+end_src
