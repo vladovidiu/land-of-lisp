@@ -427,3 +427,56 @@ Conrad's Rule of Thumb for Comparing Stuff:
 
 The =push/assoc= idiom is a common technique, because =assoc= returns the first found item, "cheating" having the same item twice; it's like the item is being overwritten.
 
+* Chapter 6
+=print/read=
+
+#+begin_src lisp
+(defun say-hello ()
+  (princ "Please type your name:")
+  (let ((name (read-line)))
+	(princ "Hello, ")
+	(princ name)))
+#+end_src
+A programming language that uses the same data structures to store and and program code is called =homoiconic=.
+Lisp has the infamous =eval= function... Javascript feelings...
+
+#+begin_src lisp
+(defparameter *allowed-commands* '(look walk pickup drop inventory))
+
+(defun game-read ()
+  (let ((cmd (read-from-string
+			  (concatenate 'string "(" (read-line) ")"))))
+	(flet ((quote-it (x)
+			 (list 'quote x)))
+	  (cons (car cmd) (mapcar #'quote-it (cdr cmd))))))
+
+(defun game-eval (sexp)
+  (if (member (car sexp) *allowed-commands*)
+	  (eval sexp)
+	  '(command unknown - try again with "look" "walk" "pickup" "drop" "inventory")))
+
+(defun tweak-text (lst caps lit)
+  (when lst
+	(let ((item (car lst))
+		  (rest (cdr lst)))
+	  (cond ((eq item #\space) (cons item (tweak-text rest caps lit)))
+			((member item '(#\! #\? #\.)) (cons item (tweak-text rest t lit)))
+			((eq item #\") (tweak-text rest caps (not lit)))
+			((or caps lit) (cons (char-upcase item) (tweak-text rest nil lit)))
+			(t (cons (char-downcase item) (tweak-text rest nil nil)))))))
+
+(defun game-print (lst)
+  (princ (coerce (tweak-text (coerce (string-trim "() "
+												  (prin1-to-string lst))
+									 'list)
+							 t
+							 nil)
+				 'string))
+  (fresh-line))
+
+(defun game-repl ()
+  (let ((cmd (game-read)))
+	(unless (eq (car cmd) 'quit)
+	  (game-print (game-eval cmd))
+	  (game-repl))))
+#+end_src
