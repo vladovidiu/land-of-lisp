@@ -346,3 +346,84 @@ Conrad's Rule of Thumb for Comparing Stuff:
 (eql #\a #\a)
 
 #+end_src
+
+* Chapter 5
+** Text Adventure Game
+#+begin_src lisp
+(defparameter *nodes* '((living-room (you are in the living room.
+									  a wizard is snoring loudly on the couch.))
+						(garden (you are in a beautiful garden.
+								 there is a well in front of you.))
+						(attic (you are in the attic.
+								there is a giant welding torch in the corner.))))
+
+(defparameter *edges* '((living-room (garden west door)
+						 (attic upstairs ladder))
+						(garden (living-room east door))
+						(attic (living-room downstairs ladder))))
+
+(defparameter *objects* '(whiskey bucket frog chain))
+
+(defparameter *object-location* '((whiskey living-room)
+								  (bucket living-room)
+								  (chain garden)
+								  (frog garden)))
+
+(defparameter *location* 'living-room)
+
+(defun describe-location (location nodes)
+  (cadr (assoc location nodes)))
+
+(defun describe-path (edge)
+  `(there is a ,(caddr edge) going ,(cadr edge) from here.))
+
+(defun describe-paths (location edges)
+  (apply #'append (mapcar #'describe-path (cdr (assoc location edges)))))
+
+(defun object-at (location objects object-location)
+  (labels ((at-location-p (object)
+			 (eq (cadr (assoc object object-location)) location)))
+	(remove-if-not #'at-location-p objects)))
+
+(defun describe-objects (location objects object-location)
+  (labels ((describe-object (object)
+			 `(you see a ,object on the floor.)))
+	(apply #'append (mapcar #'describe-object (object-at location objects object-location)))))
+
+(defun look ()
+  (append (describe-location *location* *nodes*)
+		  (describe-paths *location* *edges*)
+		  (describe-objects *location* *objects* *object-location*)))
+
+(defun walk (direction)
+  (let ((next (find direction
+					(cdr (assoc *location* *edges*))
+					:key #'cadr)))
+	(if next
+		(progn (setf *location* (car next))
+			   (look))
+		'(you cannot go that way.))))
+
+(defun pickup (object)
+  (cond ((member object
+				 (object-at *location* *objects* *object-location*))
+		 (push (list object 'body) *object-location*)
+		 `(you are now carrying the ,object))
+		(t '(you cannot get that.))))
+
+(defun drop (object)
+  (cond ((member object
+				 (object-at 'body *objects* *object-location*))
+		 (push (list object *location*) *object-location*)
+		 `(you have dropped the ,object at ,*location*))
+		 (t `(you are not carrying ,object))))
+
+(defun inventory ()
+  (cons 'items- (object-at 'body *objects* *object-location*)))
+#+end_src
+
+=quasiquoting= allows us to create chunks of data that have small pieces of Lisp code embedded in them. Looks similar to javascript's template literal.
+='= and =`= /flip/ a piece of code in data mode, but only =`= can also be /unquoted/ using the comma character, to flip back into code mode.
+
+The =push/assoc= idiom is a common technique, because =assoc= returns the first found item, "cheating" having the same item twice; it's like the item is being overwritten.
+
