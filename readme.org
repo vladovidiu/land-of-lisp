@@ -18,7 +18,7 @@ Up and coming Lisps
 - Arc
 - Clojure
 
-Lisp dialects usef for scripting
+Lisp dialects used for scripting
 - Emacs Lisp <3
 - Guile Scheme
 - Script-Fu
@@ -47,10 +47,8 @@ Lisp dialects usef for scripting
   (defparameter *big* 100)
   (guess-my-number))
 
+;; (start-over) - use the repl to play
 #+end_src
-
-#+RESULTS:
-: 25
 
 Using =*= is a best practice to mark global variables.
 
@@ -88,3 +86,149 @@ Using =*= is a best practice to mark global variables.
 
 (factorial 5)
 #+end_src
+
+* Chapter 3
+Having a simple syntax us a defining feature of the =Lisp= language. All basic Lisp code uses list-like syntax.
+** Symbols
+=Symbols= are a fundamental type of data in Lisp and are used extensively.
+eg: =+ - / * = < > ? ! _=. Other eg: =foo, ice9, my-killer-app27, --<<==>>--=
+Symbols are /*case-insensitive*/
+#+begin_src lisp
+(eq 'fooo 'FoOo)
+#+end_src
+
+** Numbers
+Lisp supports both floating-point numbers and integers. =1= and =1.0= are two different entities in Common Lisp.
+#+begin_src lisp
+(expt 53 53)
+#+end_src
+#+begin_src lisp
+(/ 4 6)
+#+end_src
+This returns a =rational number= rather than a fraction. To get a fraction, we can use floating-point numbers.
+#+begin_src lisp
+(/ 4.0 6)
+#+end_src
+
+** Strings
+#+begin_src lisp
+(princ "Tutti Frutti")
+#+end_src
+#+begin_src lisp
+(princ "He yelled \"Stop that thief!\" from the busy street.")
+#+end_src
+
+** Code mode and Data mode
+*** Code Mode
+Lisp always defaults to =code mode=. Code should be in a speical type of list: a =form=
+=(foo bla bla bla bla)=
+foo - command
+bla bla bla bla - a form
+A form is simply a list with special command at the beginning - typically the name of a function.
+Two nested forms
+#+begin_src lisp
+(expt 2 (+ 3 4))
+#+end_src
+
+*** Data Mode
+Any stuff written in data mode is treated as data. This means the pc will not try to "execute" it.
+#+begin_src lisp
+'(expt 2 3)
+#+end_src
+The single quote tells Lisp to treat the subsequent form as a chunk of data - simply a list of items. By using =quoting=, you can tell Lisp to not execute it.
+
+** Lists in Lisp
+Lists are a crucial feature in Lisp.
+If you were to build a house in Lisp, your walls would be made out of lists. The bricks would be made out of symbols, numbers, and strings. However, a wall needs mortar to hold it together. In Lisp are held together by structures called =cons cells=.
+
+*** Cons Cells
+It's made of two little connected boxes, both of which can point at other things. A cons cell can point to another cons cell or another type of Lisp data. It's possible to link cons cells together into lists. In fact, in Lisp, lists are just an abstract illusion - all of them are actually composed of cons cells. They look like Linked Lists.
+=(val, pointer)=
+
+*** List Functions
+There are 3 basic functions for manipulating cons cells in Lisp: =cons=, =car=, =cdr=.
+
+**** The =cons= Function
+If you want to link any two pieces of data in your Lisp program, the usual way to do that is with cons. When =cons= is called, the Lisp compiler typically allocates a small chunk of memory, the cons cell, that can hold two references to the objects being linked.
+#+begin_src lisp
+(cons 'chicken 'cat)
+#+end_src
+#+begin_src lisp
+(cons 'chicken 'nil)
+#+end_src
+=nil= is used to terminate a list. Lisp will always go out of its way to "hide" the cons cells from you. It will show you cons cell *only* if there isn't a way to show your results using lists.
+
+#+begin_src lisp
+(cons 'chicken ())
+#+end_src
+#+begin_src lisp
+(cons 'pork '(beef chicken))
+#+end_src
+#+begin_src lisp
+(cons 'beef (cons 'chicken ()))
+#+end_src
+#+begin_src lisp
+(cons 'pork (cons 'beef (cons 'chicken ())))
+#+end_src
+
+In Lisp, a chain of cons cells and a list are exactly the same thing.
+
+**** The =car= and =cdr= Functions
+Lists are just long chains of two-item cells. The =car= function is used for getting the thing out the /first/ slot of a cell (head).
+#+begin_src lisp
+(car '(pork beef chicken))
+#+end_src
+
+The =cdr= function is used to grab the value out of the /second/ slot, or the remainder of the list (tail).
+#+begin_src lisp
+(cdr '(pork beef chicken))
+#+end_src
+
+=cadr=, =cdar= or =cadadr=
+#+begin_src lisp
+(cadr '(pork beef chicken))
+#+end_src
+
+**** The =list= Function
+The /list/ function does the dirty work of creating all the cons cells and builds our list all at once:
+#+begin_src lisp
+(list 'pork 'beef 'chicken)
+#+end_src
+
+#+begin_src lisp
+(cons 'pork (cons 'beef (cons 'chicken 'nil)))
+#+end_src
+
+**** Nested lists
+Lists can contain other lists
+#+begin_src lisp
+'(cat (duck bat) ant)
+#+end_src
+#+begin_src lisp
+(cdar '((peas carrots tomatoes) (pork beef chicken)))
+#+end_src
+#+begin_src lisp
+(cons (cons 'peas (cons 'carrots (cons 'tomatoes ())))
+	  (cons (cons 'pork (cons 'beef (cons 'chicken ()))) ()))
+#+end_src
+
+cddr - cdr of the cdr of X.
+#+begin_src lisp
+(cddr '((peas carrots tomatoes) (pork beef chicken) duck))
+#+end_src
+
+caddr - car of the cdr of the cdr of X.
+#+begin_src lisp
+(caddr '((peas carrots tomatoes) (pork beef chicken) duck))
+#+end_src
+
+cddar - cdr of the cdr of the car of X.
+#+begin_src lisp
+(cddar '((peas carrots tomatoes) (pork beef chicken) duck))
+#+end_src
+
+cadadr - car of the cdr of the car of the cdr of X.
+#+begin_src lisp
+(cadadr '((peas carrots tomatoes) (pork beef chicken) duck))
+#+end_src
+
