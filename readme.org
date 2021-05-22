@@ -232,3 +232,117 @@ cadadr - car of the cdr of the car of the cdr of X.
 (cadadr '((peas carrots tomatoes) (pork beef chicken) duck))
 #+end_src
 
+* Chapter 4
+Lisp commands and data structures are imbued with symmetry in every conceivable way.
+Note: In Lisp, an empty list evaluates to false.
+#+begin_src lisp
+(defun my-length (list)
+  (if list
+	  (1+ (my-length (cdr list)))
+	  0))
+
+(my-length '(list with four symbols))
+;; This goes like this:
+;; 1 + (with four symbols) -> 1 + (four symbols) -> 1 + (symbols) -> 1 + () -> 0
+;; 1 + 1 + 1 + 1 + 0 = 4
+#+end_src
+
+** The four disguises of /()/
+It is the *only* false value in Common Lisp. /Any value not equivalent to an empty list will be considere a true value/
+#+begin_src lisp
+(eq '() nil)
+(eq '() ())
+(eq '() 'nil)
+;; These evaluate to true
+#+end_src
+Funny thing -> =nil= is actually a global constant evaluating to /data-mode/ nil.
+
+** The Conditionals: if and beyond
+#+begin_src lisp
+(if (oddp 5)
+	'odd-number
+	'even-number)
+#+end_src
+Usually, when a function is executed in Lisp, all the expressions after the function name are evaluated, before the function itself is evaluated. However, /if/ does not follow these rules.
+
+Since only one expression inside an /if/ is *ever* evaluated, it's impossible to do two or more separate things inside your branch. =progn= to the rescue...
+#+begin_src lisp
+(defvar *number-was-odd* nil)
+
+(if (oddp 5)
+	(progn (setf *number-was-odd* t)
+		   'odd-number)
+	'even-number)
+
+,*number-was-odd*
+
+#+end_src
+
+** Beyond /if/
+Since it's a pain to use =progn= every time, Lisp has several other commands that include an /implicit/ *progn*
+=when= and =unless=
+#+begin_src lisp
+(defvar *number-is-odd* nil)
+(when (oddp 5)
+  (setf *number-is-odd* t)
+  'odd-number)
+
+,*number-is-odd*
+
+(unless (oddp 4)
+  (setf *number-is-odd* nil)
+  'even-number)
+
+,*number-is-odd*
+#+end_src
+
+The problem with =when= and =unless= is that when the conditions evaluate the opposite way, they just return =nil= and do nothing.
+=cond= to the rescue...
+
+** The command that does it all: /cond/
+#+begin_src lisp
+(defvar *arch-enemy* nil)
+(defun pudding-eater (person)
+  (cond ((eq person 'henry) (setf *arch-enemy* 'stupid-lisp-alien)
+		 '(curse you lisp alien - you ate my pudding))
+		((eq person 'johnny) (setf *arch-enemy* 'useless-old-johnny)
+		 '(i hope you choked on my pudding johnny))
+		(t '(why you eat my pudding stranger ?))))
+
+(pudding-eater 'johnny)
+,*arch-enemy*
+#+end_src
+use =case=
+#+begin_src lisp
+(defun pudding-eater-case (person)
+  (case person
+	((henry) (setf *arch-enemy* 'henry)
+	 '(curse you lisp alien))
+	((johnny) (setf *arch-enemy* 'johnny)
+	 '(i hope you liked the pudding))
+	(otherwise '(who ate my pudding ?))))
+
+(pudding-eater-case 'johnny)
+#+end_src
+
+** Cool tricks with conditions
+Lisp uses shortcut boolean evaluation (similar to javascript).
+Some built-in functions returns more than a boolean; eg: =member= returns true if the list contains the search element, but also returns the tail (=cdr=) past searched element.
+
+** Comparing stuff: /eq/, /equal/, and /more/ 
+Lisp has a lot of comparing functions to check if two values are "the same".
+=equal, eql, eq, =, string-equal, equalp=
+
+Conrad's Rule of Thumb for Comparing Stuff:
+1. use =eq= to compare symbols.
+2. use =equal= to compare everything else.
+
+#+begin_src lisp
+(defparameter *fruit* 'apple)
+
+(cond ((eq *fruit* 'apple) 'its-an-apple)
+	  ((eq *fruit* 'orange) 'its-an-orange))
+
+(eql #\a #\a)
+
+#+end_src
