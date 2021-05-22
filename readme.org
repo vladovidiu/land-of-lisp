@@ -480,3 +480,14 @@ Lisp has the infamous =eval= function... Javascript feelings...
 	  (game-print (game-eval cmd))
 	  (game-repl))))
 #+end_src
+
+* Chapter 6.5
+=lambda= - anonymous function.
+#+begin_src lisp
+(mapcar (lambda (n) (/ n 2)) '(2 4 6))
+#+end_src
+because not all parameters of the =lambda= command are evaluated, =lambda= itself is not actually a true function, but rahter something called =macro=.
+=higher-order functional programming=
+
+* Chapter 7
+
