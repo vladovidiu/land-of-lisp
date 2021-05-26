@@ -1398,3 +1398,28 @@ Dynamically typed language !!
 				   (update-world))
 			   (evolution))))))
 #+end_src
+
+* Chapter 11
+#+begin_src lisp
+(format t "Add onion rings for only ~$ dollars more!" 1.5)
+#+end_src
+
+t - destination parameter: =nil=, =t=, =stream=
+= nil    -> no printing; returns the value as a string.
+= t      -> prints to console, and returns =nil=.
+= strea -> writes data to an output stream.
+
+= ~$ -> monetary floating-point.
+= ~s -> shows value with delimiters.
+= ~a -> shows value human readable.
+= ~Xa -> X - padding with blank space to the right of val.
+= ~X@a -> X@ - padding with blank spaces to the left of val.
+= ~x -> hexadecimal number.
+= ~b -> binary number.
+= ~d -> decimal number.
+= ~4f -> 4 characters floating number.
+= ~% -> new line in all cases.
+= ~& -> new line only if needed.
+
+* Chapter 12
+
