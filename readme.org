@@ -1422,4 +1422,63 @@ t - destination parameter: =nil=, =t=, =stream=
 = ~& -> new line only if needed.
 
 * Chapter 12
+When we communicate with an external resource from CLisp program, we do so by using a stream.
+Stream types:
+- Console streams - REPL
+- File streams - read/write files on our hard drive
+- Socket streams - communicate with other computers on a network
+- String streams - send/receive text from a Lisp string
+
+#+begin_src lisp
+(output-stream-p *standard-output*)
+#+end_src
+
+#+begin_src lisp
+(with-open-file (my-stream "data.txt" :direction :output)
+  (print "my data still" my-stream))
+#+end_src
+
+#+begin_src lisp
+(with-open-file (my-stream "data.txt" :direction :input)
+  (read my-stream))
+#+end_src
+
+#+begin_src lisp
+(let ((animal-noises '((dog . woof)
+					   (cat . meow))))
+  (with-open-file (my-stream "animal-noises.txt" :direction :output)
+	(print animal-noises my-stream)))
+
+(with-open-file (my-stream "animal-noises.txt" :direction :input)
+  (read my-stream))
+#+end_src
+
+** Sockets
+A =socket= is a mechanism for routing data over a computer network between programs running on different computers on that network.
+- IP address
+- Port number
+Any messages running over the network  (through chunks of data called /TCP/ =packets=) will be labeled with a socket address to indicate their destination.
+First step is to have one of the programs create a socket that starts in a listening state, waiting to see if other programs on the network want to start a communication.
+Computer with socket in a listening state - =server=
+Program, called =client= creates a socket on its end and uses it to establish a connection with the server.
+
+** String Streams
+Makes a string look like a stream.
+It can help with performance. Instead of concat two large strings (as the compiler needs to create a new/big block of memory if using the concat).
+
+* Chapter 13
+WEB SERVER - =web-server.lisp=
+
+#+begin_src lisp
+(error "foo")
+#+end_src
+
+Custom error func
+#+begin_src lisp
+(define-condition foo () ()
+  (:report (lambda (condition stream)
+			 (princ "Stopp FOOing around, numbskull" stream))))
+#+end_src
+
+* Chapter 14
 
