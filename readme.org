@@ -1740,3 +1740,7 @@ Macros allow us to write code that generates other code.
 #+end_src
 
 * Chapter 19
+** Code available in diceofdoom-v3.lisp
+
+* Chapter 20
+** Code available in diceofdoom-v4.lisp

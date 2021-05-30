@@ -39,10 +39,12 @@
           ,@body
           (print-tag ',name nil t)))
 
-(defmacro svg (&body body)
+(defmacro svg (width height &body body)
   `(tag svg (xmlns "http://www.w3.org/2000/svg" 
-             "xmlns:xlink" "http://www.w3.org/1999/xlink")
-	,@body))
+				   "xmlns:xlink" "http://www.w3.org/1999/xlink"
+				   height ,height
+				   width ,width)
+	 ,@body))
 
 (defun brightness (col amt)
   (mapcar (lambda (x)
