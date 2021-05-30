@@ -1,4 +1,4 @@
-(load "dice_of_doom_v1.lisp")
+(load "diceofdoom-v1.lisp")
 (load "lazy.lisp")
 
 (defparameter *board-size* 4)
